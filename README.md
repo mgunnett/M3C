@@ -1,5 +1,6 @@
 # M3C
 By PW & MG
+In order for the lighting system to function
 
 ## Pin Modes
 
