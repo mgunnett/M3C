@@ -1,6 +1,8 @@
 # M3C
 By PW & MG
-In order for the lighting system to function
+
+In order for the lighting system to function, two programs are needed for both the indoor and outdoor system. Below is a list of 
+the Pins and their correspondingsensor. 
 
 ## Pin Modes
 
