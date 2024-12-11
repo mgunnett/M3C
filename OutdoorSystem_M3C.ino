@@ -5,12 +5,12 @@
  * Description: This Arduino project is the control system for the outdoor lights. The lights utilize the use of a PIR sensor, an IR remote reciever, 
  *              and a photoresistor. This program uses the IRremote.hpp library to control the remote. 
  */
-// #include <IRremote.hpp>
+#include <IRremote.hpp>
 
 // These constants won't change:
 const int photoresistorPin = A0;   // pin that the sensor is attached to
 const int remotePin       =  A4; 
-const int Light_threshold = 300;   // an arbitrary threshold level that's in the range of the analog input
+const int Light_threshold = 400;   // an arbitrary threshold level that's in the range of the analog input
 const int PIR_PIN         =   8;     // Passive infared pin
 const int ledPin          =  13;
 
