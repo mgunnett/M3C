@@ -33,6 +33,20 @@ the Pins and their corresponding sensor.
 #### Analog
 A0- Light Sensor Analog
 
+## Remote Codes
+| Button |  Code |
+| :------: |  :-----: |
+| 0 |  22 |
+| 1 |  12 |
+| 2 |  24 |
+| 3 |  9 |
+| 4 |  8 |
+| 5 | 28 |
+| 6 |  90 |
+| 7 |  66 |
+| 8 |  82 |
+| 9 |  74 |
+
 ## Important Information
 
 - Our particular Arduino remote communicates using the NEC protocol. It can also detect signals from other remotes.
