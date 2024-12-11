@@ -1,5 +1,5 @@
 # M3C
-By PW & MG
+By Parker West & Megan Gunnett
 
 In order for the lighting system to function, two programs are needed for both the indoor and outdoor system. Below is a list of 
 the Pins and their corresponding sensor. 
