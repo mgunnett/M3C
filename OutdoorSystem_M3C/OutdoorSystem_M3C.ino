@@ -56,7 +56,11 @@ delay(15); //delay to aid in logic
 }
 
 
-
+/*         Name: remotePresets()
+*       Purpose: Recieves signal from the IR remote and decodes them into a useable integer. 
+ *       @param: N/A
+ *       Return: bool- Returns an integer code that can be used to program remote presets 
+ */
 int remotePresets() {
   if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
     uint16_t command = IrReceiver.decodedIRData.command; //converts signal into an integer value. Stored in a structure.
@@ -92,20 +96,19 @@ int remotePresets() {
         return 5;
       case 90: //button #6
         return 6;
-//add more cases for more buttons
-
-      
+      case 66: //button #7
+        return 7;
+      case 82: //button #8
+        return 8;
+      case 74: //button #9
+        return 9;   
       default: 
         return ERROR;
-      
-    }
+    } //end of switch
 
     delay(100); 
     IrReceiver.resume();
-
-  }
-
-
+  } //end of if
 }
 
 
