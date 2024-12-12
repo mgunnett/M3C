@@ -1,4 +1,4 @@
-# M3C
+# M3C README.md
 By Parker West & Megan Gunnett
 
 In order for the lighting system to function, two programs are needed for both the indoor and outdoor system. Below is a list of 
@@ -49,6 +49,7 @@ A0- Light Sensor Analog
 
 ## Important Information
 
+- Visit this [[https://www.makerguides.com/ir-receiver-remote-arduino-tutorial/]] for a helpful guide on IR Remotes in Arduino.
 - Our particular Arduino remote communicates using the NEC protocol. It can also detect signals from other remotes.
 - The remote operates using multiple presets coded into buttons 0-9
 - The outdoor and indoor system will be ran from two different Arduinos
