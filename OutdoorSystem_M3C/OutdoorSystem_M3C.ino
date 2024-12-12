@@ -3,16 +3,18 @@
  * Authors: Parker West & Megan Gunnett
  * Date: 12/18/2024
  * Description: This Arduino project is the control system for the outdoor lights. The lights utilize the use of a PIR sensor, an IR remote reciever, 
- *              and a photoresistor. This program uses the IRremote.hpp library to control the remote. 
+ *              and a photoresistor. This program uses the IRremote.hpp library to control the remote. For more information on this library, visit 
+                https://github.com/Arduino-IRremote/Arduino-IRremote.git.
  */
 #include <IRremote.hpp>
 
 // These constants won't change:
-const int photoresistorPin = A0;   // pin that the sensor is attached to
-const int remotePin       =  A4; 
-const int Light_threshold = 400;   // an arbitrary threshold level that's in the range of the analog input
+const int PR_PIN          =  A0;   // pin that the photoresistor is in
+const int IR_RECEIVE_PIN  =   4;
+const int LIGHT_THRESHOLD = 400;   // an arbitrary threshold level that's in the range of the analog input
 const int PIR_PIN         =   8;     // Passive infared pin
-const int ledPin          =  13;
+const int LED_PIN         =  12;
+const int ERROR           =  -1;  //an error message for debugging purposes
 
 //function prototypes, all used without callbacks
 int remotePresets();
@@ -26,9 +28,11 @@ void setup() {
   Serial.begin(9600);
 
   // initialize pins for input/output:
-  pinMode(ledPin, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
   pinMode(PIR_PIN, INPUT);
-  pinMode(photoresistorPin, INPUT);
+  pinMode(PR_PIN, INPUT);
+  //initialize the IR reciever (using the IRremote library)
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
 
 //functions as an `int main()`
@@ -37,12 +41,15 @@ void loop() {
  
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
-    digitalWrite(ledPin, HIGH); //power on LED
+    digitalWrite(LED_PIN, HIGH); //power on LED
+    remotePresets();
   }
   else { //then either no motion is detected or the light level is too high
-    digitalWrite(ledPin, LOW); //power off LED
+    digitalWrite(LED_PIN, LOW); //power off LED
   }
  
+
+
 printValues(); //display sensor values for debugging
 delay(15); //delay to aid in logic
 
@@ -51,6 +58,53 @@ delay(15); //delay to aid in logic
 
 
 int remotePresets() {
+  if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
+    uint16_t command = IrReceiver.decodedIRData.command; //converts signal into an integer value. Stored in a structure.
+    //usually, the signal would be printed in the command line. The print commands are in printValues()
+
+    /* decode the integer signal using the table values below:
+  
+                      | Button | Code | 
+                          | 0 |  22 |
+                          | 1 |  12 |
+                          | 2 |  24 |
+                          | 3 |   9 |
+                          | 4 |   8 |
+                          | 5 |  28 |
+                          | 6 |  90 |
+                          | 7 |  66 |
+                          | 8 |  82 |
+                          | 9 |  74 |
+  */
+    //run a switch statement. Returns the button pressed
+    switch (command){
+      case 22: //button #0
+        return 0;
+      case 12: //button #1
+        return 1;
+      case 24: //button #2
+        return 2;
+      case 9: //button #3
+        return 3;
+      case 8: //button #4
+        return 4;
+      case 28: //button #5
+        return 5;
+      case 90: //button #6
+        return 6;
+//add more cases for more buttons
+
+      
+      default: 
+        return ERROR;
+      
+    }
+
+    delay(100); 
+    IrReceiver.resume();
+
+  }
+
 
 }
 
@@ -80,10 +134,10 @@ bool motionDetected() {
  */
 bool lightLevel () {
  // read the value of the potentiometer:
-  int PRValue = analogRead(photoresistorPin);
+  int PRValue = analogRead(PR_PIN);
 
   // if the analog value is high enough, turn on the LED:
-  if (PRValue > Light_threshold) {
+  if (PRValue > LIGHT_THRESHOLD) {
     return true;
   } 
   else {
@@ -104,9 +158,9 @@ void printValues(){
   Serial.print(PIR_Value);
 
   //photoresistor values
-  int photoresistorValue = analogRead(photoresistorPin);
+  int PRValue = analogRead(PR_PIN);
   Serial.print("  Photoresistor Value: ");
-  Serial.print(photoresistorValue);
+  Serial.print(PRValue);
    Serial.print("  \n"); //print space between each sensor value and then a new line
 
   //wait .3 seconds for readability
