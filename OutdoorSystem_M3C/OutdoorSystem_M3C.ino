@@ -82,6 +82,7 @@ int remoteButtons() {
                           | 7 |  66 |
                           | 8 |  82 |
                           | 9 |  74 |
+                          |999|  69 | POWER BUTTON
   */
     //run a switch statement. Returns the button pressed
     switch (command){
@@ -105,6 +106,8 @@ int remoteButtons() {
         return 8;
       case 74: //button #9
         return 9;   
+      case 69: //PWR button
+        return 999;
       default: 
         return ERROR;
     } //end of switch
