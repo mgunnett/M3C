@@ -18,7 +18,6 @@ const int ERROR           =  -1;  //an error message for debugging purposes
 
 //function prototypes, all used without callbacks
 int remotePresets();
-int IR_SENSOR();
 bool motionDetected();
 bool lightLevel();
 void printValues();
@@ -41,7 +40,9 @@ void loop() {
  
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
-    digitalWrite(LED_PIN, HIGH); //power on LED
+    digitalWrite(LED_PIN, HIGH);
+     delay(15000); // wait 15 seconds
+     digitalWrite(LED_PIN, LOW);
     remotePresets();
   }
   else { //then either no motion is detected or the light level is too high
@@ -59,7 +60,7 @@ delay(15); //delay to aid in logic
 /*         Name: remotePresets()
 *       Purpose: Recieves signal from the IR remote and decodes them into a useable integer. 
  *       @param: N/A
- *       Return: bool- Returns an integer code that can be used to program remote presets 
+ *       Return: int- Returns an integer code that can be used to program remote presets 
  */
 int remotePresets() {
   if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
@@ -112,13 +113,6 @@ int remotePresets() {
 }
 
 
-
-int IR_SENSOR() {
-
-}
-
-
-
 bool motionDetected() {
  int PIR_Value = digitalRead(PIR_PIN);
 
@@ -129,6 +123,8 @@ bool motionDetected() {
     return false;
   }
 }
+
+
 /*         Name: lightLevel()
 *       Purpose: Detects the light level and compares it to a predefined threshold.
  *       @param: N/A
