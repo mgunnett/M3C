@@ -4,17 +4,21 @@
  * Date: 12/18/2024
  * Description: This Arduino project is the control system for the outdoor lights. The lights utilize the use of a PIR sensor, an IR remote reciever, 
  *              and a photoresistor. This program uses the IRremote.hpp library to control the remote. For more information on this library, visit 
-                https://github.com/Arduino-IRremote/Arduino-IRremote.git.
+                https://github.com/Arduino-IRremote/Arduino-IRremote.git. This program also sues the millisDelay library to control the use of a timer.
  */
 #include <IRremote.hpp>
+#include <millisDelay.h>
+
+millisDelay ledDelay; //declare the millisecond delay for the LED
 
 // These constants won't change:
-const int PR_PIN          =  A0;   // pin that the photoresistor is in
-const int IR_RECEIVE_PIN  =   4;
-const int LIGHT_THRESHOLD = 400;   // an arbitrary threshold level that's in the range of the analog input
-const int PIR_PIN         =   8;     // Passive infared pin
+const int PR_PIN          =  A0;  // pin that the photoresistor is in
+const int IR_RECEIVE_PIN  =   4;   
+const int LIGHT_THRESHOLD = 400;  // an arbitrary threshold level that's in the range of the analog input
+const int PIR_PIN         =   8;  // Passive infared pin
 const int LED_PIN         =  12;
-const int ERROR           =  -1;  //an error message for debugging purposes
+const int ERROR           =  -1;  // an error message for debugging purposes
+const int PWR             = 999;  // defines power button as an integer
 
 //function prototypes, all used without callbacks
 int remoteButtons();
@@ -43,12 +47,15 @@ void loop() {
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
     digitalWrite(LED_PIN, HIGH);
-     delay(15000); // wait 15 seconds // TEMPORARY
-     digitalWrite(LED_PIN, LOW);
+    ledDelay.start(15000); 
+    //delay(15000); // wait 15 seconds // TEMPORARY
+    digitalWrite(LED_PIN, LOW);
     remoteButtons();
   }
   else { //then either no motion is detected or the light level is too high
-    digitalWrite(LED_PIN, LOW); //power off LED
+     if (ledDelay.justFinished()) {
+      digitalWrite(LED_PIN, LOW); //power off LED
+     }
   }
  
 
@@ -107,7 +114,7 @@ int remoteButtons() {
       case 74: //button #9
         return 9;   
       case 69: //PWR button
-        return 999;
+        return PWR;
       default: 
         return ERROR;
     } //end of switch
