@@ -17,10 +17,11 @@ const int LED_PIN         =  12;
 const int ERROR           =  -1;  //an error message for debugging purposes
 
 //function prototypes, all used without callbacks
-int remotePresets();
+int remoteButtons();
 bool motionDetected();
 bool lightLevel();
 void printValues();
+int remotePresets();
 
 void setup() {
   // initialize serial communications at 9600 bits per second:
@@ -38,12 +39,13 @@ void setup() {
 //these programs will loop continously and 'control' the arduino
 void loop() {
  
+ 
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
     digitalWrite(LED_PIN, HIGH);
-     delay(15000); // wait 15 seconds
+     delay(15000); // wait 15 seconds // TEMPORARY
      digitalWrite(LED_PIN, LOW);
-    remotePresets();
+    remoteButtons();
   }
   else { //then either no motion is detected or the light level is too high
     digitalWrite(LED_PIN, LOW); //power off LED
@@ -62,7 +64,7 @@ delay(15); //delay to aid in logic
  *       @param: N/A
  *       Return: int- Returns an integer code that can be used to program remote presets 
  */
-int remotePresets() {
+int remoteButtons() {
   if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
     uint16_t command = IrReceiver.decodedIRData.command; //converts signal into an integer value. Stored in a structure.
     //usually, the signal would be printed in the command line. The print commands are in printValues()
@@ -110,6 +112,14 @@ int remotePresets() {
     delay(100); 
     IrReceiver.resume();
   } //end of if
+
+  /*Remote Preset list and Functions:
+  Button 0: 
+  Button 1:
+  Button 2:
+  Button 3:
+  Button 4:
+  */
 }
 
 
