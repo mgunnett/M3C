@@ -15,16 +15,17 @@ millisDelay ledDelay; //declare the millisecond delay for the LED
 const int PR_PIN          =  A0;  // pin that the photoresistor is in
 const int IR_RECEIVE_PIN  =   4;   
 const int PIR_PIN         =   8;  // Passive infared pin
-const int LED_PIN         =  11;  // A PWM pin so birghtness can be adjusted
-const int LIGHT_THRESHOLD = 400;  // an arbitrary threshold level that's in the range of the analog input
+const int LED_PIN         =  10;  // A PWM pin so birghtness can be adjusted
+const int LIGHT_THRESHOLD = 350;  // an arbitrary threshold level that's in the range of the analog input
 const int ERROR           =  -1;  // an error message for debugging purposes
 const int PWR             = 999;  // defines power button as an integer
+      int counter         =   1;  // A counter to keep track of the number of PWR button presses
 
 //function prototypes, see below loop() for definitions
 int remoteInput();
 bool motionDetected();
 bool lightLevel();
-void printValues();
+void printValues(int button);
 void remotePresets(int button);
 
 void setup() {
@@ -43,30 +44,28 @@ void setup() {
 //functions as an `int main()`
 //these programs will loop continously and 'control' the arduino
 void loop() {
-  printValues();
-  int button = remoteInput(); //the value returned from remote input
-  remotePresets(button);
+  int button = remoteInput();
+    remotePresets(button);
 
 
 
- /*
-  //first, detect if the light level is high enough and detect motion
-  if (motionDetected() == true && lightLevel() == true) {
-    digitalWrite(LED_PIN, HIGH);
-    ledDelay.start(15000); //set a timer for 15 seconds
-    remoteInput();        //detect a remote button input
-  }
-  else { //then either no motion is detected or the light level is too high
-     if (ledDelay.justFinished()) {
-      digitalWrite(LED_PIN, LOW); //power off LED
-     }
-  }
- */
+  /*
+    //first, detect if the light level is high enough and detect motion
+    if (motionDetected() == true && lightLevel() == true) {
+      digitalWrite(LED_PIN, HIGH);
+      ledDelay.start(15000); //set a timer for 15 seconds
+      remoteInput();        //detect a remote button input
+    }
+    else { //then either no motion is detected or the light level is too high
+      if (ledDelay.justFinished()) {
+        digitalWrite(LED_PIN, LOW); //power off LED
+      }
+    }
+  */
 
-//printValues(); //display sensor values for debugging
-delay(15); //delay to aid in logic
+  printValues(button); //display sensor values for debugging
+  delay(15); //delay to aid in logic
 }
-
 
 /*         Name: remotePresets()
  *      Purpose: Recieves signal from the IR remote and decodes them into a useable integer. Most code in this function
@@ -78,22 +77,24 @@ int remoteInput() {
   if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
     uint16_t command = IrReceiver.decodedIRData.command; //converts signal into an integer value. Stored in a structure.
     //usually, the signal would be printed in the command line. The print commands are in printValues()
-
-    /* decode the integer signal using the table values below:
+    /* 
+    decode the integer signal using the table values below:
   
                       | Button | Code | 
-                          | 0 |  22 |
-                          | 1 |  12 |
-                          | 2 |  24 |
-                          | 3 |   9 |
-                          | 4 |   8 |
-                          | 5 |  28 |
-                          | 6 |  90 |
-                          | 7 |  66 |
-                          | 8 |  82 |
-                          | 9 |  74 |
-                          |PWR|  69 | 
+                      |      0 |  22 |
+                      |      1 |  12 |
+                      |      2 |  24 |
+                      |      3 |  94 |
+                      |      4 |   8 |
+                      |      5 |  28 |
+                      |      6 |  90 |
+                      |      7 |  66 |
+                      |      8 |  82 |
+                      |      9 |  74 |
+                      |     PWR|  69 | 
   */
+    delay(15); 
+    IrReceiver.resume();
     //run a switch statement. Returns the button pressed
     switch (command){
       case 22: //button #0
@@ -102,7 +103,7 @@ int remoteInput() {
         return 1;
       case 24: //button #2
         return 2;
-      case 9: //button #3
+      case 94: //button #3
         return 3;
       case 8: //button #4
         return 4;
@@ -117,25 +118,14 @@ int remoteInput() {
       case 74: //button #9
         return 9;   
       case 69: //PWR button
+        counter++;
         return PWR;
       default: //then an unknown signal is recieved
         return ERROR;
     } //end of switch
-
-    delay(100); 
-    IrReceiver.resume();
   } 
-  else { //if no input is recieved, report back ERROR
-  return ERROR;
-  }
 
-  /*Remote Preset list and Functions:
-  Button 0: 
-  Button 1:
-  Button 2:
-  Button 3:
-  Button 4:
-  */
+
 }
 /*         Name: remotePresets
  *      Purpose 
@@ -143,32 +133,89 @@ int remoteInput() {
  *       Return: N/A- runs line of code without a return. 
  */
 void remotePresets(int button){
+  /* 
+   decode the integer signal using the table values below:
+                     | Button |    Preset      | 
+                     |      0 | Motion Sensor  |
+                     |      1 | Low Brightness |
+                     |      2 | Mid Brightness |
+                     |      3 | High Brightness|
+                     |      4 | Slow Fade      |
+                     |      5 | Mid Fade       |
+                     |      6 | Fast Fade      |
+                     |      7 | Candle         |
+                     |      8 | N/A            |
+                     |      9 | N/A            |
+                     |     PWR| Manual On/Off  | 
+  */
+  //run a switch statment. Runs a preset based on the button inputed:
   switch (button){
-    case 0:
-     //enter preset
-      break;
- case 1:
-     //enter preset
-      break;
-
- case 2:
-     //enter preset
+    case 0: //the motion sensor code, inputting other codes will ovveride this code
+       if (motionDetected() == true && lightLevel() == true) { //check if the light level is low enough and motion is detected
+      digitalWrite(LED_PIN, HIGH);
+      ledDelay.start(5000); //set a timer for 15 seconds
+      }
       break;
 
- case 3:
-     //enter preset
+    case 1: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
+      analogWrite(LED_PIN, 20); 
       break;
 
- case 4:
-     //enter preset
+ case 2: //mid brightness
+      analogWrite(LED_PIN, 100);
+      break;
+
+ case 3: //high brightness
+      analogWrite(LED_PIN, 255);
+      break;
+
+ case 4: //slow fade
+     //fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(20); //wait 20 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(20); //wait 20 msec
+     }
       break;
 
  case 5:
+     //fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(10); //wait 10 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(10); //wait 10 msec
+     }
      //enter preset
       break;
 
  case 6:
-     //enter preset
+//fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(5); //wait 20 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(5); //wait 20 msec
+     }
       break;
 
  case 7:
@@ -183,23 +230,22 @@ void remotePresets(int button){
       break;
 
  case PWR:
-     //enter preset
+      //turn the lights on and off again, depending on the value of counter
+      if (counter % 2 == 1){ //if counter is odd, then turn on the lights
+        digitalWrite(LED_PIN, HIGH);
+      }
+      else {
+        digitalWrite(LED_PIN, LOW);
+      }
       break;
 
-  default: //the motion detection code
-    if (motionDetected() == true && lightLevel() == true) {
-      digitalWrite(LED_PIN, HIGH);
-      ledDelay.start(15000); //set a timer for 15 seconds
-      remoteInput();        //detect a remote button input
-    }
-    else { //then either no motion is detected or the light level is too high
-      if (ledDelay.justFinished()) {
-        digitalWrite(LED_PIN, LOW); //power off LED
-      }
-    }
+  default: 
       break;
   }
-
+  //put the code to turn off the motion-powered lights here so they will always check
+  if (ledDelay.justFinished()) {
+          digitalWrite(LED_PIN, LOW); //power off LED
+  }
 }
 
 /*         Name: motionDetected
@@ -244,7 +290,7 @@ bool lightLevel () {
  *       @param: N/A
  *       Return: N/A- runs line of code without a return. 
  */
-void printValues(){
+void printValues(int button){
   //PIR Values
   int PIR_Value = digitalRead(PIR_PIN);
   Serial.print("PIR Value: ");
@@ -257,14 +303,16 @@ void printValues(){
 
   //remote input values
   Serial.print ("  Remote Button Input: ");
-  if (remoteInput() == ERROR){ //print that the Arduino is running its default preset
-  Serial.print("ERROR/Default");
+  if (button == ERROR){ //print if there was an error with the signal
+    Serial.print("ERROR");
+  }
+  else if (button == PWR){ //print if the PWR button was pressed
+    Serial.print("PWR");
   }
   else { //print which button was pressed
-    Serial.print(remoteInput());
+    Serial.print(button);
   }
-
-  Serial.print("  \n"); //print space between each sensor value and then a new line
+  Serial.print("  :-)\n"); //print space between each sensor value and then a new line
 
   //wait .3 seconds for readability
   delay(300);
