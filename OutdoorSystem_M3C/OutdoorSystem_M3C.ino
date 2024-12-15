@@ -14,27 +14,28 @@ millisDelay ledDelay; //declare the millisecond delay for the LED
 // These constants won't change:
 const int PR_PIN          =  A0;  // pin that the photoresistor is in
 const int IR_RECEIVE_PIN  =   4;   
-const int LIGHT_THRESHOLD = 400;  // an arbitrary threshold level that's in the range of the analog input
 const int PIR_PIN         =   8;  // Passive infared pin
-const int LED_PIN         =  12;
+const int LED_PIN         =  11;  // A PWM pin so birghtness can be adjusted
+const int LIGHT_THRESHOLD = 400;  // an arbitrary threshold level that's in the range of the analog input
 const int ERROR           =  -1;  // an error message for debugging purposes
 const int PWR             = 999;  // defines power button as an integer
 
 //function prototypes, all used without callbacks
-int remoteButtons();
+int remoteInput();
 bool motionDetected();
 bool lightLevel();
 void printValues();
 int remotePresets();
 
 void setup() {
-  // initialize serial communications at 9600 bits per second:
+  // initialize serial communications at 9600 bits per second
   Serial.begin(9600);
 
-  // initialize pins for input/output:
+  // initialize pins for input/output
   pinMode(LED_PIN, OUTPUT);
   pinMode(PIR_PIN, INPUT);
   pinMode(PR_PIN, INPUT);
+  
   //initialize the IR reciever (using the IRremote library)
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
@@ -47,10 +48,8 @@ void loop() {
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
     digitalWrite(LED_PIN, HIGH);
-    ledDelay.start(15000); 
-    //delay(15000); // wait 15 seconds // TEMPORARY
-    digitalWrite(LED_PIN, LOW);
-    remoteButtons();
+    ledDelay.start(15000); //set a timer for 15 seconds
+    remoteInput();        //detect a remote button input
   }
   else { //then either no motion is detected or the light level is too high
      if (ledDelay.justFinished()) {
@@ -59,19 +58,18 @@ void loop() {
   }
  
 
-
 printValues(); //display sensor values for debugging
 delay(15); //delay to aid in logic
-
 }
 
 
 /*         Name: remotePresets()
-*       Purpose: Recieves signal from the IR remote and decodes them into a useable integer. 
+ *      Purpose: Recieves signal from the IR remote and decodes them into a useable integer. Most code in this function
+ *               is derived from the IRreciever library.
  *       @param: N/A
  *       Return: int- Returns an integer code that can be used to program remote presets 
  */
-int remoteButtons() {
+int remoteInput() {
   if (IrReceiver.decode()){ //if a signal is recieved, decode the recieved signal to a hexadecimal value
     uint16_t command = IrReceiver.decodedIRData.command; //converts signal into an integer value. Stored in a structure.
     //usually, the signal would be printed in the command line. The print commands are in printValues()
@@ -89,7 +87,7 @@ int remoteButtons() {
                           | 7 |  66 |
                           | 8 |  82 |
                           | 9 |  74 |
-                          |999|  69 | POWER BUTTON
+                          |PWR|  69 | 
   */
     //run a switch statement. Returns the button pressed
     switch (command){
@@ -115,13 +113,16 @@ int remoteButtons() {
         return 9;   
       case 69: //PWR button
         return PWR;
-      default: 
+      default: //then an unknown signal is recieved
         return ERROR;
     } //end of switch
 
     delay(100); 
     IrReceiver.resume();
-  } //end of if
+  } 
+  else { //if no input is recieved, report back ERROR
+  return ERROR;
+  }
 
   /*Remote Preset list and Functions:
   Button 0: 
@@ -132,7 +133,11 @@ int remoteButtons() {
   */
 }
 
-
+/*         Name: motionDetected
+*       Purpose: Detects if motion is around the sensor (using 0 for fale, 1 for true)
+ *       @param: N/A
+ *       Return: bool- returns true when motion is detected, returns false when none is detected
+ */
 bool motionDetected() {
  int PIR_Value = digitalRead(PIR_PIN);
 
@@ -180,7 +185,14 @@ void printValues(){
   int PRValue = analogRead(PR_PIN);
   Serial.print("  Photoresistor Value: ");
   Serial.print(PRValue);
-   Serial.print("  \n"); //print space between each sensor value and then a new line
+
+  //remote input values
+  Serial.print ("  Remote Button Input: ");
+  if (remoteInput() != ERROR){ //we do not want to print anything if no signal is recieved
+  Serial.print(remoteInput());
+  }
+
+  Serial.print("  \n"); //print space between each sensor value and then a new line
 
   //wait .3 seconds for readability
   delay(300);
