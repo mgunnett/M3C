@@ -20,12 +20,12 @@ const int LIGHT_THRESHOLD = 400;  // an arbitrary threshold level that's in the 
 const int ERROR           =  -1;  // an error message for debugging purposes
 const int PWR             = 999;  // defines power button as an integer
 
-//function prototypes, all used without callbacks
+//function prototypes, see below loop() for definitions
 int remoteInput();
 bool motionDetected();
 bool lightLevel();
 void printValues();
-int remotePresets();
+void remotePresets(int button);
 
 void setup() {
   // initialize serial communications at 9600 bits per second
@@ -43,8 +43,13 @@ void setup() {
 //functions as an `int main()`
 //these programs will loop continously and 'control' the arduino
 void loop() {
- 
- 
+  printValues();
+  int button = remoteInput(); //the value returned from remote input
+  remotePresets(button);
+
+
+
+ /*
   //first, detect if the light level is high enough and detect motion
   if (motionDetected() == true && lightLevel() == true) {
     digitalWrite(LED_PIN, HIGH);
@@ -56,9 +61,9 @@ void loop() {
       digitalWrite(LED_PIN, LOW); //power off LED
      }
   }
- 
+ */
 
-printValues(); //display sensor values for debugging
+//printValues(); //display sensor values for debugging
 delay(15); //delay to aid in logic
 }
 
@@ -132,9 +137,73 @@ int remoteInput() {
   Button 4:
   */
 }
+/*         Name: remotePresets
+ *      Purpose 
+ *       @param: int button- the number of the pressed button (numbers 0-9, PWR button)
+ *       Return: N/A- runs line of code without a return. 
+ */
+void remotePresets(int button){
+  switch (button){
+    case 0:
+     //enter preset
+      break;
+ case 1:
+     //enter preset
+      break;
+
+ case 2:
+     //enter preset
+      break;
+
+ case 3:
+     //enter preset
+      break;
+
+ case 4:
+     //enter preset
+      break;
+
+ case 5:
+     //enter preset
+      break;
+
+ case 6:
+     //enter preset
+      break;
+
+ case 7:
+     //enter preset
+      break;
+
+ case 8:
+     //enter preset
+      break;
+ case 9:
+     //enter preset
+      break;
+
+ case PWR:
+     //enter preset
+      break;
+
+  default: //the motion detection code
+    if (motionDetected() == true && lightLevel() == true) {
+      digitalWrite(LED_PIN, HIGH);
+      ledDelay.start(15000); //set a timer for 15 seconds
+      remoteInput();        //detect a remote button input
+    }
+    else { //then either no motion is detected or the light level is too high
+      if (ledDelay.justFinished()) {
+        digitalWrite(LED_PIN, LOW); //power off LED
+      }
+    }
+      break;
+  }
+
+}
 
 /*         Name: motionDetected
-*       Purpose: Detects if motion is around the sensor (using 0 for fale, 1 for true)
+ *      Purpose: Detects if motion is around the sensor (using 0 for fale, 1 for true)
  *       @param: N/A
  *       Return: bool- returns true when motion is detected, returns false when none is detected
  */
@@ -188,8 +257,11 @@ void printValues(){
 
   //remote input values
   Serial.print ("  Remote Button Input: ");
-  if (remoteInput() != ERROR){ //we do not want to print anything if no signal is recieved
-  Serial.print(remoteInput());
+  if (remoteInput() == ERROR){ //print that the Arduino is running its default preset
+  Serial.print("ERROR/Default");
+  }
+  else { //print which button was pressed
+    Serial.print(remoteInput());
   }
 
   Serial.print("  \n"); //print space between each sensor value and then a new line
