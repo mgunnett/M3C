@@ -37,32 +37,18 @@ void setup() {
   pinMode(PIR_PIN, INPUT);
   pinMode(PR_PIN, INPUT);
   
+  //seed the RNG... used for the candle preset in remotePresets
+  randomSeed(analogRead(0));
+
   //initialize the IR reciever (using the IRremote library)
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
 
-//functions as an `int main()`
+//functions as an 'int main()'
 //these programs will loop continously and 'control' the arduino
 void loop() {
-  int button = remoteInput();
-    remotePresets(button);
-
-
-
-  /*
-    //first, detect if the light level is high enough and detect motion
-    if (motionDetected() == true && lightLevel() == true) {
-      digitalWrite(LED_PIN, HIGH);
-      ledDelay.start(15000); //set a timer for 15 seconds
-      remoteInput();        //detect a remote button input
-    }
-    else { //then either no motion is detected or the light level is too high
-      if (ledDelay.justFinished()) {
-        digitalWrite(LED_PIN, LOW); //power off LED
-      }
-    }
-  */
-
+  int button = remoteInput(); //define button as the current remote input
+  remotePresets(button); //check which preset to run based on button value
   printValues(button); //display sensor values for debugging
   delay(15); //delay to aid in logic
 }
@@ -185,7 +171,7 @@ void remotePresets(int button){
      }
       break;
 
- case 5:
+ case 5: //mid fade
      //fade the LED brighter first
      for (int i = 0; i <= 255; i++){
       analogWrite(LED_PIN, i);
@@ -202,8 +188,8 @@ void remotePresets(int button){
      //enter preset
       break;
 
- case 6:
-//fade the LED brighter first
+ case 6: //fast fade
+     //fade the LED brighter first
      for (int i = 0; i <= 255; i++){
       analogWrite(LED_PIN, i);
       //check for remote input to exit a long loop
@@ -218,15 +204,20 @@ void remotePresets(int button){
      }
       break;
 
- case 7:
-     //enter preset
-      break;
+ case 7: //candle effect, uses a RNG to control the brightness
+    while(true){
+        int flicker = random(75, 150);
+        analogWrite(LED_PIN, flicker);
+        if (IrReceiver.decode()) break;
+        delay(random(10, 100));
+      }
+    break;
 
  case 8:
-     //enter preset
+     //intentionally left blank
       break;
  case 9:
-     //enter preset
+     //intentionally left blank
       break;
 
  case PWR:
@@ -239,8 +230,8 @@ void remotePresets(int button){
       }
       break;
 
-  default: 
-      break;
+  default: //then the remote has received an error
+    break;
   }
   //put the code to turn off the motion-powered lights here so they will always check
   if (ledDelay.justFinished()) {
