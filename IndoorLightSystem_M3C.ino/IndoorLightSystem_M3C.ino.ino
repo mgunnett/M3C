@@ -79,7 +79,10 @@ int remoteInput() {
                       |      7 |  66 |
                       |      8 |  82 |
                       |      9 |  74 |
-                      |     PWR|  69 | 
+                      |     PWR|  69 |
+                      |     FFW|  67 | Fast Forward
+                      |     PPL|  64 | Pause/Play
+                      |     RWW|  68 | Rewind
   */
     delay(15); 
     IrReceiver.resume();
@@ -108,6 +111,12 @@ int remoteInput() {
       case 69: //PWR button
         counter++;
         return PWR;
+      case 67: // Fast Forward
+        return FFW;
+      case 64: //Pause Play
+        return PPL;
+      case 68: //Rewind
+        return RWW;
       default: //then an unknown signal is recieved
         return ERROR;
     } //end of switch
@@ -125,16 +134,19 @@ void remotePresets(int button){
    decode the integer signal using the table values below:
                      | Button |    Preset      | 
                      |      0 | Motion Sensor  |
-                     |      1 | Low Brightness |
-                     |      2 | Mid Brightness |
-                     |      3 | High Brightness|
-                     |      4 | Slow Fade      |
-                     |      5 | Mid Fade       |
-                     |      6 | Fast Fade      |
+                     |      1 | Red LED Color  |
+                     |      2 | Green LED Color|
+                     |      3 | Blue LED Color |
+                     |      4 | Low Brightness |
+                     |      5 | Mid Brightness |
+                     |      6 | High Brightness|
                      |      7 | Candle         |
                      |      8 | N/A            |
                      |      9 | N/A            |
-                     |     PWR| Manual On/Off  | 
+                     |     PWR| Manual On/Off  |
+                     |     FFW| Fast Fade      | 
+                     |     PPL| Mid Fade       |
+                     |     RWW| Slow Fade      |
   */
   //run a switch statment. Runs a preset based on the button inputed:
   switch (button){
@@ -145,65 +157,25 @@ void remotePresets(int button){
       }
       break;
 
-    case 1: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
+    case 1: // Insert Red LED Control
+      break;
+
+ case 2: // Insert Green LED Control
+      break;
+
+ case 3: // Insert Blue LED Control
+      break;
+
+ case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
       analogWrite(LED_PIN, 20); 
       break;
 
- case 2: //mid brightness
+ case 5: //mid brightness
       analogWrite(LED_PIN, 100);
       break;
 
- case 3: //high brightness
+ case 6: //high brightness
       analogWrite(LED_PIN, 255);
-      break;
-
- case 4: //slow fade
-     //fade the LED brighter first
-     for (int i = 0; i <= 255; i++){
-      analogWrite(LED_PIN, i);
-      //check for remote input to exit a long loop
-      if (IrReceiver.decode()) break;
-      delay(20); //wait 20 msec
-     }
-     //now fade the LED dimmer
-     for (int i = 255; i >= 0; i--){
-      analogWrite(LED_PIN, i);
-      if (IrReceiver.decode()) break;
-      delay(20); //wait 20 msec
-     }
-      break;
-
- case 5: //mid fade
-     //fade the LED brighter first
-     for (int i = 0; i <= 255; i++){
-      analogWrite(LED_PIN, i);
-      //check for remote input to exit a long loop
-      if (IrReceiver.decode()) break;
-      delay(10); //wait 10 msec
-     }
-     //now fade the LED dimmer
-     for (int i = 255; i >= 0; i--){
-      analogWrite(LED_PIN, i);
-      if (IrReceiver.decode()) break;
-      delay(10); //wait 10 msec
-     }
-     //enter preset
-      break;
-
- case 6: //fast fade
-     //fade the LED brighter first
-     for (int i = 0; i <= 255; i++){
-      analogWrite(LED_PIN, i);
-      //check for remote input to exit a long loop
-      if (IrReceiver.decode()) break;
-      delay(5); //wait 20 msec
-     }
-     //now fade the LED dimmer
-     for (int i = 255; i >= 0; i--){
-      analogWrite(LED_PIN, i);
-      if (IrReceiver.decode()) break;
-      delay(5); //wait 20 msec
-     }
       break;
 
  case 7: //candle effect, uses a RNG to control the brightness
@@ -220,6 +192,56 @@ void remotePresets(int button){
       break;
  case 9:
      //intentionally left blank
+      break;
+
+  case FFW:
+  //fast fade
+     //fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(5); //wait 20 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(5); //wait 20 msec
+     }
+      break;
+case PPL:
+ //mid fade
+     //fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(10); //wait 10 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(10); //wait 10 msec
+     }
+     //enter preset
+      break;
+case RWW:
+//slow fade
+     //fade the LED brighter first
+     for (int i = 0; i <= 255; i++){
+      analogWrite(LED_PIN, i);
+      //check for remote input to exit a long loop
+      if (IrReceiver.decode()) break;
+      delay(20); //wait 20 msec
+     }
+     //now fade the LED dimmer
+     for (int i = 255; i >= 0; i--){
+      analogWrite(LED_PIN, i);
+      if (IrReceiver.decode()) break;
+      delay(20); //wait 20 msec
+     }
       break;
 
  case PWR:
