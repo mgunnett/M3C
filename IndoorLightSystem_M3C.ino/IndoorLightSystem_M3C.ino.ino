@@ -12,13 +12,17 @@
 millisDelay ledDelay; //declare the millisecond delay for the LED
 
 // These constants won't change:
-const int PR_PIN          =  A0;  // pin that the photoresistor is in
-const int IR_RECEIVE_PIN  =   4;   
-const int PIR_PIN         =   8;  // Passive infared pin
+const int IR_RECEIVE_PIN  =   7;   
+const int PIR_PIN         =   4;  // Passive infared pin
 const int LED_PIN         =  10;  // A PWM pin so birghtness can be adjusted
+const int RED_PIN         =  11;  // Pin for RGB LED Red control
+const int GREEN_PIN       =  10;  // Pin for RGB LED Green control
+const int BLUE_PIN        =   9;  // Pin for RGB LED Blue control
 const int ERROR           =  -1;  // an error message for debugging purposes
+const int BUTTON_PIN      =   2;  // Pin for the button
 const int PWR             = 999;  // defines power button as an integer
       int counter         =   1;  // A counter to keep track of the number of PWR button presses
+
 
 //function prototypes, see below loop() for definitions
 int remoteInput();
@@ -231,6 +235,7 @@ void remotePresets(int button){
   default: //then the remote has received an error
     break;
   }
+  
   //put the code to turn off the motion-powered lights here so they will always check
   if (ledDelay.justFinished()) {
           digitalWrite(LED_PIN, LOW); //power off LED
