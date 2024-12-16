@@ -38,6 +38,9 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(PIR_PIN, INPUT);
   pinMode(PR_PIN, INPUT);
+  pinMode(RED_PIN,   OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  pinMode(BLUE_PIN,  OUTPUT);
   
   //seed the RNG... used for the candle preset in remotePresets
   randomSeed(analogRead(0));
@@ -157,13 +160,22 @@ void remotePresets(int button){
       }
       break;
 
-    case 1: // Insert Red LED Control
+    case 1: // Red LED Color
+    analogWrite(RED_PIN,   255);
+    analogWrite(GREEN_PIN, 45);
+    analogWrite(BLUE_PIN,  0);
       break;
 
- case 2: // Insert Green LED Control
+ case 2: // Green LED Color
+    analogWrite(RED_PIN,   8);
+    analogWrite(GREEN_PIN, 255);
+    analogWrite(BLUE_PIN,  0);
       break;
 
- case 3: // Insert Blue LED Control
+ case 3:  // Blue LED Color
+    analogWrite(RED_PIN,   12);
+    analogWrite(GREEN_PIN, 0);
+    analogWrite(BLUE_PIN,  255);
       break;
 
  case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
