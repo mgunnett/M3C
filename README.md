@@ -31,7 +31,25 @@ the Pins and their corresponding sensor.
 2- Light Sensor Digital
 
 #### Analog
+
 A0- Light Sensor Analog
+
+## Indoor System
+
+### Digital
+
+11- RGB Red Pin
+
+10- RGB Green Pin
+
+9- RGB Blue PIn
+
+7- IR Reciever
+
+4- PIR Sensor (motion)
+
+2- Button 
+
 
 ## Remote Codes
 | Button |  Code |
