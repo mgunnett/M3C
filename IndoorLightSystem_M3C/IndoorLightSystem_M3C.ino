@@ -1,8 +1,8 @@
 /*
- * File: OutdoorSystem_M3C.ino
+ * File: IndoorSystem_M3C.ino
  * Authors: Parker West & Megan Gunnett
  * Date: 12/18/2024
- * Description: This Arduino project is the control system for the outdoor lights. The lights utilize the use of a PIR sensor, an IR remote reciever, 
+ * Description: This Arduino project is the control system for the indoor lights. The lights utilize the use of a PIR sensor, an IR remote reciever, RGB lights,
  *              and a photoresistor. This program uses the IRremote.hpp library to control the remote. For more information on this library, visit 
                 https://github.com/Arduino-IRremote/Arduino-IRremote.git. This program also sues the millisDelay library to control the use of a timer.
  */
@@ -16,7 +16,6 @@ const int PR_PIN          =  A0;  // pin that the photoresistor is in
 const int IR_RECEIVE_PIN  =   4;   
 const int PIR_PIN         =   8;  // Passive infared pin
 const int LED_PIN         =  10;  // A PWM pin so birghtness can be adjusted
-const int LIGHT_THRESHOLD = 350;  // an arbitrary threshold level that's in the range of the analog input
 const int ERROR           =  -1;  // an error message for debugging purposes
 const int PWR             = 999;  // defines power button as an integer
       int counter         =   1;  // A counter to keep track of the number of PWR button presses
@@ -24,7 +23,6 @@ const int PWR             = 999;  // defines power button as an integer
 //function prototypes, see below loop() for definitions
 int remoteInput();
 bool motionDetected();
-bool lightLevel();
 void printValues(int button);
 void remotePresets(int button);
 
@@ -255,27 +253,6 @@ bool motionDetected() {
   }
 }
 
-
-/*         Name: lightLevel()
-*       Purpose: Detects the light level and compares it to a predefined threshold.
- *       @param: N/A
- *       Return: bool- returns true when the light level is above a threshold (when darker), returns
- *                     false when the light level is below a threshold. 
- */
-bool lightLevel () {
- // read the value of the potentiometer:
-  int PRValue = analogRead(PR_PIN);
-
-  // if the analog value is high enough, turn on the LED:
-  if (PRValue > LIGHT_THRESHOLD) {
-    return true;
-  } 
-  else {
-    return false;
-  }
-}
-
-
 /*         Name: printValues()
 *       Purpose: Prints the values of all the sensors in the serial monitor for easy debugging.
  *       @param: N/A
@@ -286,11 +263,6 @@ void printValues(int button){
   int PIR_Value = digitalRead(PIR_PIN);
   Serial.print("PIR Value: ");
   Serial.print(PIR_Value);
-
-  //photoresistor values
-  int PRValue = analogRead(PR_PIN);
-  Serial.print("  Photoresistor Value: ");
-  Serial.print(PRValue);
 
   //remote input values
   Serial.print ("  Remote Button Input: ");
