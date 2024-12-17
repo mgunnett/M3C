@@ -21,6 +21,9 @@ const int BLUE_PIN        =   9;  // Pin for RGB LED Blue control
 const int ERROR           =  -1;  // an error message for debugging purposes
 const int BUTTON_PIN      =   2;  // Pin for the button
 const int PWR             = 999;  // defines power button as an integer
+const int FFW             =  42;  // defines fast-forward button as an integer
+const int PPL             = 111;  // defines pause-play button as an integer
+const int RWW             = 144;  // defines rewind button as an integer
       int counter         =   1;  // A counter to keep track of the number of PWR button presses
 
 
@@ -37,7 +40,7 @@ void setup() {
   // initialize pins for input/output
   pinMode(LED_PIN, OUTPUT);
   pinMode(PIR_PIN, INPUT);
-  pinMode(PR_PIN, INPUT);
+  //pinMode(PR_PIN, INPUT);
   pinMode(RED_PIN,   OUTPUT);
   pinMode(GREEN_PIN, OUTPUT);
   pinMode(BLUE_PIN,  OUTPUT);
@@ -154,9 +157,11 @@ void remotePresets(int button){
   //run a switch statment. Runs a preset based on the button inputed:
   switch (button){
     case 0: //the motion sensor code, inputting other codes will ovveride this code
-       if (motionDetected() == true && lightLevel() == true) { //check if the light level is low enough and motion is detected
-      digitalWrite(LED_PIN, HIGH);
-      ledDelay.start(5000); //set a timer for 15 seconds
+       if (motionDetected() == true) { //check if the light level is low enough and motion is detected
+     analogWrite(RED_PIN,   255);
+    analogWrite(GREEN_PIN, 255);
+    analogWrite(BLUE_PIN,  255);
+      ledDelay.start(5000); //set a timer for 55 seconds
       }
       break;
 
@@ -164,19 +169,19 @@ void remotePresets(int button){
     analogWrite(RED_PIN,   255);
     analogWrite(GREEN_PIN, 45);
     analogWrite(BLUE_PIN,  0);
-      break;
+    break;
 
  case 2: // Green LED Color
     analogWrite(RED_PIN,   8);
     analogWrite(GREEN_PIN, 255);
     analogWrite(BLUE_PIN,  0);
-      break;
+    break;
 
  case 3:  // Blue LED Color
     analogWrite(RED_PIN,   12);
     analogWrite(GREEN_PIN, 0);
     analogWrite(BLUE_PIN,  255);
-      break;
+    break;
 
  case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
       analogWrite(LED_PIN, 20); 
@@ -272,7 +277,9 @@ case RWW:
   
   //put the code to turn off the motion-powered lights here so they will always check
   if (ledDelay.justFinished()) {
-          digitalWrite(LED_PIN, LOW); //power off LED
+      analogWrite(RED_PIN,   0);
+      analogWrite(GREEN_PIN, 0);
+      analogWrite(BLUE_PIN,  0);
   }
 }
 
@@ -305,14 +312,25 @@ void printValues(int button){
 
   //remote input values
   Serial.print ("  Remote Button Input: ");
-  if (button == ERROR){ //print if there was an error with the signal
-    Serial.print("ERROR");
-  }
-  else if (button == PWR){ //print if the PWR button was pressed
-    Serial.print("PWR");
-  }
-  else { //print which button was pressed
-    Serial.print(button);
+  switch (button){
+    case PWR:
+      Serial.print("PWR");
+      break;
+    case FFW:
+      Serial.print("FFW");
+      break;
+    case PPL:
+      Serial.print("PPL");
+      break;
+    case RWW:
+      Serial.print("RWW");
+      break;
+    case ERROR:
+      Serial.print("ERROR");
+      break;
+    default:
+      Serial.print(button);
+      break;
   }
   Serial.print("  :-)\n"); //print space between each sensor value and then a new line
 
