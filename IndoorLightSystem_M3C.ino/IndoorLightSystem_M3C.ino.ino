@@ -159,8 +159,8 @@ void remotePresets(int button){
   switch (button){
     case 0: //the motion sensor code, inputting other codes will ovveride this code
        if (motionDetected() == true) { //check if the light level is low enough and motion is detected
-        setRGB(255, 255, 255);
-      ledDelay.start(5000); //set a timer for 55 seconds
+        setRGB(255, 200, 200);
+        ledDelay.start(5000); //set a timer for 5 seconds
       }
       break;
 
@@ -168,35 +168,65 @@ void remotePresets(int button){
     setRGB(255, 0, 0);
     break;
 
- case 2: // Green LED Color
-    setRGB(0, 255, 0);
-    break;
-
- case 3:  // Blue LED Color
-    setRGB(0, 0, 255);
-    break;
-
- case 4: //Intentionally left empty
-  break;
-
- case 5: //Intentionally left empty
+  case 2: // Green LED Color
+      setRGB(0, 255, 0);
       break;
 
- case 6: //Intentiionally left empty
+  case 3:  // Blue LED Color
+      setRGB(0, 0, 255);
       break;
 
- case 7: //candle effect, uses a RNG to control the brightness
-    while(true){
-        int flicker = random(75, 150);
-        analogWrite(LED_PIN, flicker);
+  case 4: //orange LED color
+    setRGB(255, 20, 0);
+    break;
+
+  case 5: //purple LED Color
+      setRGB(255, 0, 255);
+      break;
+
+  case 6: //cyan LED color
+      setRGB(5, 250, 200);
+      break;
+
+  case 7: //candle effect, uses a RNG to control the brightness
+      while(true){
+          int flicker = random(75, 150);
+          analogWrite(LED_PIN, flicker);
+          if (IrReceiver.decode()) break;
+          delay(random(10, 100));
+        }
+      break;
+
+  case 8: //party mode. Will flash different colors
+        int color = random(0, 6); 
         if (IrReceiver.decode()) break;
-        delay(random(10, 100));
+      //perform a switch statement to decide what color to turn to 
+      switch (color){
+        case 0: //set red
+          setRGB(255, 0, 0);
+          break;
+        case 1: //set green
+        setRGB(0, 255, 0);
+          break;
+        case 2: //set blue
+          setRGB(0, 0, 255);
+          break;
+        case 3: //set orange
+          setRGB(255, 20, 0);
+          break;
+        case 4: //set purple
+          setRGB(255, 0, 255);
+          break;
+        case 5:
+          setRGB(5, 250, 200);
+          break;
+        default:
+          break;
       }
-    break;
-
- case 8:
-     //intentionally left blank
+      //then delay for a little bit
+      delay(50);
       break;
+
  case 9:
      //intentionally left blank
       break;
@@ -254,7 +284,7 @@ case RWW:
  case PWR:
       //turn the lights on and off again, depending on the value of counter
       if (counter % 2 == 1){ //if counter is odd, then turn on the lights
-        setRGB(255, 255, 255);
+        setRGB(255, 200, 200);
       }
       else {
         setRGB(0, 0, 0);
