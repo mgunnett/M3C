@@ -176,16 +176,13 @@ void remotePresets(int button){
     setRGB(0, 0, 255);
     break;
 
- case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
-      setRGB(50, 50, 50);
+ case 4: //Intentionally left empty
+  break;
+
+ case 5: //Intentionally left empty
       break;
 
- case 5: //mid brightness
-      setRGB(150, 150, 150);
-      break;
-
- case 6: //high brightness
-      setRGB(255, 255, 255);
+ case 6: //Intentiionally left empty
       break;
 
  case 7: //candle effect, uses a RNG to control the brightness
