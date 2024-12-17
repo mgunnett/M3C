@@ -30,6 +30,7 @@ const int RWW             = 144;  // defines rewind button as an integer
 //function prototypes, see below loop() for definitions
 int remoteInput();
 bool motionDetected();
+void setRGB(int red, int green, int blue);
 void printValues(int button);
 void remotePresets(int button);
 
@@ -158,29 +159,21 @@ void remotePresets(int button){
   switch (button){
     case 0: //the motion sensor code, inputting other codes will ovveride this code
        if (motionDetected() == true) { //check if the light level is low enough and motion is detected
-     analogWrite(RED_PIN,   255);
-    analogWrite(GREEN_PIN, 255);
-    analogWrite(BLUE_PIN,  255);
+        setRGB(255, 255, 255);
       ledDelay.start(5000); //set a timer for 55 seconds
       }
       break;
 
     case 1: // Red LED Color
-    analogWrite(RED_PIN,   255);
-    analogWrite(GREEN_PIN, 45);
-    analogWrite(BLUE_PIN,  0);
+    setRGB(255, 0, 0);
     break;
 
  case 2: // Green LED Color
-    analogWrite(RED_PIN,   8);
-    analogWrite(GREEN_PIN, 255);
-    analogWrite(BLUE_PIN,  0);
+    setRGB(0, 255, 0);
     break;
 
  case 3:  // Blue LED Color
-    analogWrite(RED_PIN,   12);
-    analogWrite(GREEN_PIN, 0);
-    analogWrite(BLUE_PIN,  255);
+    setRGB(0, 0, 255);
     break;
 
  case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
@@ -277,9 +270,7 @@ case RWW:
   
   //put the code to turn off the motion-powered lights here so they will always check
   if (ledDelay.justFinished()) {
-      analogWrite(RED_PIN,   0);
-      analogWrite(GREEN_PIN, 0);
-      analogWrite(BLUE_PIN,  0);
+    setRGB(0, 0, 0);
   }
 }
 
@@ -299,8 +290,23 @@ bool motionDetected() {
   }
 }
 
+/*         Name: setRGB
+ *      Purpose: Sets RGB bulbs to a specified red, green, and blue value
+ *       @param: int red- value of red
+ *       @param: int green- value of green
+ *       @param: int blue- value of blue
+ *       Return: N/A- runs line of code without a return. 
+ */
+void setRGB(int red, int green, int blue){
+  analogWrite(RED_PIN, red);
+  analogWrite(GREEN_PIN, green);
+  analogWrite(BLUE_PIN, blue);
+
+}
+
+
 /*         Name: printValues()
-*       Purpose: Prints the values of all the sensors in the serial monitor for easy debugging.
+ *      Purpose: Prints the values of all the sensors in the serial monitor for easy debugging.
  *       @param: N/A
  *       Return: N/A- runs line of code without a return. 
  */
