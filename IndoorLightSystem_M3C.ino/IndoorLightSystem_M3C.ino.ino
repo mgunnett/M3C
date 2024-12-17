@@ -185,7 +185,8 @@ void remotePresets(int button){
       break;
 
   case 6: //cyan LED color
-      setRGB(5, 250, 200);
+      setRGB(0, 250, 200);
+      //setRGB(255, 255, 255);
       break;
 
   case 7: //candle effect, uses a RNG to control the brightness
@@ -218,7 +219,7 @@ void remotePresets(int button){
           setRGB(255, 0, 255);
           break;
         case 5:
-          setRGB(5, 250, 200);
+          setRGB(0, 250, 200);
           break;
         default:
           break;
@@ -328,7 +329,7 @@ void setRGB(int red, int green, int blue){
   analogWrite(RED_PIN, red);
   analogWrite(GREEN_PIN, green);
   analogWrite(BLUE_PIN, blue);
-
+  delay(15);
 }
 
 
