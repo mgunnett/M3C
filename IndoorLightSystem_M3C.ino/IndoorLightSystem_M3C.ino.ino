@@ -177,15 +177,15 @@ void remotePresets(int button){
     break;
 
  case 4: //low brightness. Since LED_PIN is a PWM pin, we can use analogWrite
-      analogWrite(LED_PIN, 20); 
+      setRGB(50, 50, 50);
       break;
 
  case 5: //mid brightness
-      analogWrite(LED_PIN, 100);
+      setRGB(150, 150, 150);
       break;
 
  case 6: //high brightness
-      analogWrite(LED_PIN, 255);
+      setRGB(255, 255, 255);
       break;
 
  case 7: //candle effect, uses a RNG to control the brightness
@@ -257,10 +257,10 @@ case RWW:
  case PWR:
       //turn the lights on and off again, depending on the value of counter
       if (counter % 2 == 1){ //if counter is odd, then turn on the lights
-        digitalWrite(LED_PIN, HIGH);
+        setRGB(255, 255, 255);
       }
       else {
-        digitalWrite(LED_PIN, LOW);
+        setRGB(0, 0, 0);
       }
       break;
 
