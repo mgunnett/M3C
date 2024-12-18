@@ -12,7 +12,7 @@
 millisDelay ledDelay; //declare the millisecond delay for the LED
 
 // These constants won't change:
-const int IR_RECEIVE_PIN  =   7;   
+const int IR_RECEIVE_PIN  =   7;  // Pin for the IR Reciever
 const int PIR_PIN         =   4;  // Passive infared pin
 const int LED_PIN         =  10;  // A PWM pin so birghtness can be adjusted
 const int RED_PIN         =  11;  // Pin for RGB LED Red control
@@ -62,7 +62,7 @@ void loop() {
   delay(15); //delay to aid in logic
 }
 
-/*         Name: remotePresets()
+/*         Name: remoteInput()
  *      Purpose: Recieves signal from the IR remote and decodes them into a useable integer. Most code in this function
  *               is derived from the IRreciever library.
  *       @param: N/A
@@ -132,28 +132,28 @@ int remoteInput() {
 
 }
 /*         Name: remotePresets
- *      Purpose 
+ *      Purpose : Executes different functions to the LEDs when a button is pressed on the remote.
  *       @param: int button- the number of the pressed button (numbers 0-9, PWR button)
  *       Return: N/A- runs line of code without a return. 
  */
 void remotePresets(int button){
   /* 
    decode the integer signal using the table values below:
-                     | Button |    Preset      | 
-                     |      0 | Motion Sensor  |
-                     |      1 | Red LED Color  |
-                     |      2 | Green LED Color|
-                     |      3 | Blue LED Color |
-                     |      4 | Low Brightness |
-                     |      5 | Mid Brightness |
-                     |      6 | High Brightness|
-                     |      7 | Candle         |
-                     |      8 | N/A            |
-                     |      9 | N/A            |
-                     |     PWR| Manual On/Off  |
-                     |     FFW| Fast Fade      | 
-                     |     PPL| Mid Fade       |
-                     |     RWW| Slow Fade      |
+                     | Button |    Preset        | 
+                     |      0 | Motion Sensor    |
+                     |      1 | Red LED Color    |
+                     |      2 | Green LED Color  |
+                     |      3 | Blue LED Color   |
+                     |      4 | Orange LED Color |
+                     |      5 | Purple LED Color |
+                     |      6 | Cyan LED Color   |
+                     |      7 | Candle           |
+                     |      8 | Party Mode       |
+                     |      9 | N/A              |
+                     |     PWR| Manual On/Off    |
+                     |     FFW| Fast Fade        | 
+                     |     PPL| Mid Fade         |
+                     |     RWW| Slow Fade        |
   */
   //run a switch statment. Runs a preset based on the button inputed:
   switch (button){
@@ -248,8 +248,8 @@ void remotePresets(int button){
       delay(5); //wait 20 msec
      }
       break;
-case PPL:
- //mid fade
+      
+  case PPL: //mid fade
      //fade the LED brighter first
      for (int i = 0; i <= 255; i++){
       analogWrite(LED_PIN, i);
@@ -265,8 +265,7 @@ case PPL:
      }
      //enter preset
       break;
-case RWW:
-//slow fade
+  case RWW: //slow fade
      //fade the LED brighter first
      for (int i = 0; i <= 255; i++){
       analogWrite(LED_PIN, i);
@@ -344,7 +343,7 @@ void printValues(int button){
   Serial.print("PIR Value: ");
   Serial.print(PIR_Value);
 
-  //remote input values
+  //remote input values - debugging
   Serial.print ("  Remote Button Input: ");
   switch (button){
     case PWR:
